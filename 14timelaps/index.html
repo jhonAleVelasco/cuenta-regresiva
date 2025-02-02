@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Regresiva Terranova</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rosa-claro: #FFB6C1;
+            --rojo-oscuro: #8B0000;
+            --trigo: #F5DEB3;
+            --slate: #2F4F4F;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--rosa-claro);
+            color: var(--slate);
+            font-family: 'Open Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .water-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="%238B0000" opacity="0.1" d="M36.7 18.9c1.7-1 22.9-7.6 25.7 9.3 2.1 12.5-15 23.9-15 23.9s17.3-9.7 19.1-22c1.5-10.5-7.9-15.4-7.9-15.4s6.7 4.3 8.1 14.3c1.7 12-16.4 22.7-16.4 22.7s19.3-11.7 19.3-23c0-13.1-18.3-11-18.3-11s15.7-3.4 18.6 8.4c2.5 10.1-12.4 20.8-12.4 20.8s16.3-12.3 15.6-22.3C84.5 9.7 65 15.4 65 15.4s13.9-8.7 13.9 9.3c0 16.1-25.8 28-25.8 28s27.4-14.3 27.4-28c0-14.8-20.1-10.8-20.1-10.8"/></svg>');
+            opacity: 0.1;
+            z-index: -2;
+        }
+
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            animation: float 6s infinite linear;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 16px;
+            background: #8B0000;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .heart::before {
+            left: 10px;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+
+        .heart::after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0.8; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(139, 0, 0, 0.1);
+            max-width: 800px;
+            width: 90%;
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--trigo);
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5rem;
+            color: var(--rojo-oscuro);
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .time-unit {
+            padding: 1.5rem;
+            background: rgba(245, 222, 179, 0.3);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .time-unit:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.15);
+        }
+
+        .time-unit::after {
+            content: '🐾';
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            opacity: 0.1;
+            font-size: 1.5rem;
+        }
+
+        .number {
+            font-size: 2.8rem;
+            font-weight: 300;
+            color: var(--rojo-oscuro);
+            margin-bottom: 0.5rem;
+            font-family: 'Great Vibes', cursive;
+        }
+
+        .label {
+            font-size: 0.9rem;
+            color: var(--slate);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+
+        .current-time {
+            margin-top: 2rem;
+            color: var(--slate);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .countdown-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts-container" id="heartsContainer"></div>
+    <div class="water-effect"></div>
+    
+    <div class="container">
+        <h1>Nuestro San Valentín Terranova</h1>
+        
+        <div class="countdown-grid">
+            <div class="time-unit">
+                <div class="number" id="days">00</div>
+                <div class="label">Días</div>
+            </div>
+            <div class="time-unit">
+                <div class="number" id="hours">00</div>
+                <div class="label">Horas</div>
+            </div>
+            <div class="time-unit">
+                <div class="number" id="minutes">00</div>
+                <div class="label">Minutos</div>
+            </div>
+            <div class="time-unit">
+                <div class="number" id="seconds">00</div>
+                <div class="label">Segundos</div>
+            </div>
+        </div>
+
+        <div class="current-time" id="current-time"></div>
+    </div>
+
+    <script>
+        function createHearts(num) {
+            const container = document.getElementById('heartsContainer');
+            container.innerHTML = '';
+            for(let i = 0; i < num; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                container.appendChild(heart);
+            }
+        }
+
+        const targetDate = new Date(2025, 1, 14).getTime();
+        
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('current-time').textContent = 
+                `Hora actual: ${new Date().toLocaleTimeString('es-ES', options)}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createHearts(30);
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        });
+    </script>
+</body>
+</html>
